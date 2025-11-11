@@ -17,7 +17,7 @@ using winnow::Winnow;
 
 Winnow filter(0.1, 0.5, 1.0, 0.0);  // process noise, sensor noise, error estimate, initial value
 
-double noisy_reading = analogRead(A0);
+double noisy_reading = ReadAnalogPin(analog_pin);
 double clean_value = filter.getFilteredValue(noisy_reading);
 ```
 
@@ -29,7 +29,7 @@ double clean_value = filter.getFilteredValue(noisy_reading);
 winnow_filter filter;
 winnow_init(&filter, 0.1, 0.5, 1.0, 0.0);
 
-double noisy_reading = analogRead(A0);
+double noisy_reading = ReadAnalogPin(analog_pin);
 double clean_value = winnow_get_filtered_value(&filter, noisy_reading);
 ```
 
