@@ -1,55 +1,107 @@
-#ifndef _Winnow_h
-#define _Winnow_h
+#ifndef _WINNOW_H
+#define _WINNOW_H
 
 /**
- * @brief Implements a simple Kalman filter for one-dimensional data
+ * Winnow - A lightweight 1D Kalman filter implementation
+ *
+ * Quick library for a simple Kalman filter for smoothing noisy sensor
+ * (or other) data in embedded systems projects.
+ *
+ * Author: Kevin Terry
+ * License: MIT
  */
-class Winnow {
-   private:
-    double q;  // process noise covariance
-    double r;  // measurement noise covariance
-    double x;  // value
-    double p;  // estimation error covariance
-    double k;  // kalman gain
 
-   public:
-    // Constructors
-    Winnow() : q(0.0), r(0.0), p(0.0), x(0.0), k(0.0) {}
-
-    Winnow(double process_noise, double sensor_noise, double estimated_error, double initial_value)
-        : q(process_noise), r(sensor_noise), p(estimated_error), x(initial_value), k(0.0) {}
-
-    double getFilteredValue(double measurement) {
-        this->p = this->p + this->q;
-
-        // measurement update
-        this->k = this->p / (this->p + this->r);
-        this->x = this->x + this->k * (measurement - this->x);
-        this->p = (1 - this->k) * this->p;
-
-        return this->x;
-    }
-
-    // Setters
-    void setParameters(double process_noise, double sensor_noise, double estimated_error) {
-        this->q = process_noise;
-        this->r = sensor_noise;
-        this->p = estimated_error;
-    }
-
-    void setParameters(double process_noise, double sensor_noise) {
-        this->q = process_noise;
-        this->r = sensor_noise;
-    }
-
-    void setProcessNoise(double process_noise) { this->q = process_noise; }
-    void setSensorNoise(double sensor_noise) { this->r = sensor_noise; }
-    void setEstimatedError(double estimated_error) { this->p = estimated_error; }
-
-    // Getters
-    double getProcessNoise() const { return this->q; }
-    double getSensorNoise() const { return this->r; }
-    double getEstimatedError() const { return this->p; }
-};
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+/* Winnow Kalman filter structure */
+typedef struct {
+    double process_noise_covariance;     /* q: process noise covariance */
+    double measurement_noise_covariance; /* r: measurement noise covariance */
+    double estimated_value;              /* x: current estimated value */
+    double estimation_error_covariance;  /* p: estimation error covariance */
+    double kalman_gain;                  /* k: kalman gain */
+} winnow_filter;
+
+/* Initialize filter with all parameters */
+static inline void winnow_init(winnow_filter* filter, double process_noise, double sensor_noise,
+    double estimated_error, double initial_value) {
+    filter->process_noise_covariance = process_noise;
+    filter->measurement_noise_covariance = sensor_noise;
+    filter->estimation_error_covariance = estimated_error;
+    filter->estimated_value = initial_value;
+    filter->kalman_gain = 0.0;
+}
+
+/* Process new measurement and return filtered value */
+static inline double winnow_get_filtered_value(winnow_filter* filter, double measurement) {
+    /* Prediction update */
+    filter->estimation_error_covariance
+        = filter->estimation_error_covariance + filter->process_noise_covariance;
+
+    /* Measurement update */
+    filter->kalman_gain = filter->estimation_error_covariance
+        / (filter->estimation_error_covariance + filter->measurement_noise_covariance);
+    filter->estimated_value
+        = filter->estimated_value + filter->kalman_gain * (measurement - filter->estimated_value);
+    filter->estimation_error_covariance
+        = (1.0 - filter->kalman_gain) * filter->estimation_error_covariance;
+
+    return filter->estimated_value;
+}
+
+/* Set all filter parameters at once */
+static inline void winnow_set_parameters(winnow_filter* filter, double process_noise,
+    double sensor_noise, double estimated_error) {
+    filter->process_noise_covariance = process_noise;
+    filter->measurement_noise_covariance = sensor_noise;
+    filter->estimation_error_covariance = estimated_error;
+}
+
+/* Set process noise covariance */
+static inline void winnow_set_process_noise(winnow_filter* filter, double process_noise) {
+    filter->process_noise_covariance = process_noise;
+}
+
+/* Set measurement noise covariance */
+static inline void winnow_set_sensor_noise(winnow_filter* filter, double sensor_noise) {
+    filter->measurement_noise_covariance = sensor_noise;
+}
+
+/* Set estimation error covariance */
+static inline void winnow_set_estimated_error(winnow_filter* filter, double estimated_error) {
+    filter->estimation_error_covariance = estimated_error;
+}
+
+/* Reset filter to initial state */
+static inline void winnow_reset(winnow_filter* filter, double initial_value) {
+    filter->estimated_value = initial_value;
+    filter->kalman_gain = 0.0;
+}
+
+/* Get current estimated value without processing new measurement */
+static inline double winnow_get_current_value(const winnow_filter* filter) {
+    return filter->estimated_value;
+}
+
+/* Get process noise covariance */
+static inline double winnow_get_process_noise(const winnow_filter* filter) {
+    return filter->process_noise_covariance;
+}
+
+/* Get measurement noise covariance */
+static inline double winnow_get_sensor_noise(const winnow_filter* filter) {
+    return filter->measurement_noise_covariance;
+}
+
+/* Get estimation error covariance */
+static inline double winnow_get_estimated_error(const winnow_filter* filter) {
+    return filter->estimation_error_covariance;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _WINNOW_H */

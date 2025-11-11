@@ -1,11 +1,14 @@
 #keywords
 
-winnow	KEYWORD1
+winnow	KEYWORD3
+Winnow	KEYWORD1
 setParameters	KEYWORD2
 setSensorNoise	KEYWORD2
 setProcessNoise	KEYWORD2
 setEstimatedError	KEYWORD2
+reset	KEYWORD2
 getProcessNoise	KEYWORD2
-getFilteredValue 	KEYWORD2
+getFilteredValue	KEYWORD2
+getCurrentValue	KEYWORD2
 getSensorNoise	KEYWORD2
 getEstimatedError	KEYWORD2
