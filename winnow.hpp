@@ -1,13 +1,4 @@
 #pragma once
-/**
- * Winnow - A lightweight 1D Kalman filter implementation
- *
- * Quick library for a simple Kalman filter for smoothing noisy sensor
- * (or other) data in embedded systems projects.
- *
- * Author: Kevin Terry
- * License: MIT
- */
 
 namespace winnow {
 
@@ -56,7 +47,7 @@ class Winnow {
         estimation_error_covariance = estimated_error;
     }
 
-    // Set noise parameters (keeps current error estimate)
+    // Set noise parameters (keep the current error estimate)
     void setParameters(double process_noise, double sensor_noise) {
         process_noise_covariance = process_noise;
         measurement_noise_covariance = sensor_noise;

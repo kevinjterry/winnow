@@ -1,10 +1,18 @@
 # Winnow
 
-A simple Kalman filter library for smoothing noisy sensor data in embedded systems and Arduino projects.
+A lightweight single-dimension Kalman filter for real-time data smoothing.
+Useful for reducing noise and impulses in slow or noisy signals where windowed averaging isn’t practical.
 
 ## What it does
 
-Takes noisy measurements and gives you cleaner, more stable values. Great for smoothing out unstable sensor readings.
+Filters incoming data by tracking the previous state and estimating the next with tunable system noise parameters.
+
+## Parameters
+
+- **Process noise**: How much the true value changes (smaller = smoother but slower response)
+- **Sensor noise**: How noisy your sensor is (higher = more filtering)
+- **Error estimate**: Initial uncertainty
+- **Initial value**: Starting point for the filter
 
 ## Usage
 
@@ -15,7 +23,7 @@ Takes noisy measurements and gives you cleaner, more stable values. Great for sm
 
 using winnow::Winnow;
 
-Winnow filter(0.1, 0.5, 1.0, 0.0);  // process noise, sensor noise, error estimate, initial value
+Winnow filter(0.1, 0.5, 1.0, 0.0); // process noise, sensor noise, error estimate, initial value
 
 double noisy_reading = readAnalogPin(analog_pin);
 double clean_value = filter.getFilteredValue(noisy_reading);
@@ -27,18 +35,11 @@ double clean_value = filter.getFilteredValue(noisy_reading);
 #include "Winnow.h"
 
 winnow_filter filter;
-winnow_init(&filter, 0.1, 0.5, 1.0, 0.0);
+winnow_init(&filter, 0.1, 0.5, 1.0, 0.0); // process noise, sensor noise, error estimate, initial value
 
 double noisy_reading = readAnalogPin(analog_pin);
 double clean_value = winnow_get_filtered_value(&filter, noisy_reading);
 ```
-
-## Parameters
-
-- **Process noise**: How much the true value changes (smaller = smoother but slower response)
-- **Sensor noise**: How noisy your sensor is (higher = more filtering)
-- **Error estimate**: Initial uncertainty (usually start with 1.0)
-- **Initial value**: Starting point for the filter
 
 ## License
 
